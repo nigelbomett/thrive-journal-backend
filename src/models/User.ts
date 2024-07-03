@@ -48,7 +48,7 @@ User.init(
             sequelize,
             hooks: { //encrypt password before saving user
                 beforeCreate: (user) => {
-                    user.password_hash = bcrypt.hashSync(user.password_hash,8);
+                    user.password_hash = bcrypt.hashSync(user.password_hash,10);
                 }
             }
         }
