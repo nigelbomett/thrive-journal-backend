@@ -4,13 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/index.js",
+    "dev": "node src/index.ts",
+    "build": "tsc -p ."
   },
   "keywords": [],
   "author": "Nigel Bomett",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2"
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4",
+    "sequelize": "^6.37.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
