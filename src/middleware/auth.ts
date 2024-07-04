@@ -11,6 +11,7 @@ var jwt = require('jsonwebtoken');
 
 interface JwTPayload{
     id:number;
+    file:any;
 }
 
 declare global {
@@ -18,6 +19,7 @@ declare global {
         interface Request {
             userId?: number;
             user?: string 
+            file?:any
         }
     }
 }
@@ -50,6 +52,7 @@ export const verifyToken = async (req:Request,res:Response,next: NextFunction) =
         
         req.user = user;
         req.userId = (user as JwTPayload).id;
+        req.file = (user as JwTPayload).file
         
         next(); //go to the next step in the route end-point
     });

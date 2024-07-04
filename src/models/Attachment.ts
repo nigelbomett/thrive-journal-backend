@@ -6,7 +6,7 @@ interface AttachmentAttributes{
     id:number;
     journalEntryId:number;
     filePath:string;
-    fileType:string;
+    fileName:string;
 }
 
 interface AttachmentCreationAttributes extends Optional<AttachmentAttributes,'id'>{} //id auto-generated in the database
@@ -15,7 +15,7 @@ export class Attachment extends Model<AttachmentAttributes,AttachmentCreationAtt
     public id!: number;
     public journalEntryId!: number;
     public filePath!: string;
-    public fileType!: string;
+    public fileName!: string;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -35,7 +35,7 @@ Attachment.init({
         type: DataTypes.STRING(128),
         allowNull: false
     },
-    fileType:{
+    fileName:{
         type: DataTypes.STRING(128),
         allowNull:false
     }
