@@ -1,5 +1,7 @@
 import express,{Request,Response} from 'express';
 import { User } from '../models/User';
+import { blacklistToken, verifyToken } from '../middleware/auth';
+import { isValidEmail } from '../utils/validators';
 
 
 var bcrypt = require('bcryptjs');
@@ -8,11 +10,6 @@ var jwt = require('jsonwebtoken');
 
 //create router object to handle requests
 const router = express.Router();
-
-const isValidEmail = (email:string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
 
 //add new user
 router.post('/register',async(req:Request,res:Response) => {
@@ -28,6 +25,8 @@ router.post('/register',async(req:Request,res:Response) => {
         if(!isValidEmail(email)){
             return res.status(400).json({error: 'Invalid email format'});
         }
+
+        if(String(username).length <2) return res.status(400).json({error: 'Username is too short'});
 
         //check if user already exists
         const existingUser = await User.findOne({where: {email: email}});
@@ -73,10 +72,24 @@ router.post('/login',async (req:Request,res:Response) => {
     }
 
     //Generate a JWT token
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {expiresIn: '12h'});
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {expiresIn: '1h'});
     res.json({token});
 });
 
+//logout route
+router.post('/logout',verifyToken, (req: Request,res: Response) => {
+    ( async () => {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    //Add the token to the Redis blacklist
+    if(token){
+        await blacklistToken(token);
+        res.status(200).send('User logged out successfully');
+    }else {
+        res.status(400).send('Token not provided');
+    }
+})().catch((err) => res.status(500).send('Internal Server Error'));
+});
 
 
 export default router;
