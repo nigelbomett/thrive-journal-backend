@@ -11,11 +11,15 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+var cors = require('cors');
+
 var bodyParser = require('body-parser');
 
 
 const app:Application = express();
 const PORT = process.env.LOCAL_PORT
+
+app.use(cors());
 
 //Middleware
 app.use(express.json());
