@@ -1,6 +1,7 @@
 import './config/config'
 import express,{Application} from 'express';
 import authRoutes from './routes/user_auth';
+import userRoutes from './routes/user';
 import { sequelize } from './config/db';
 
 const dotenv = require('dotenv');
@@ -18,6 +19,7 @@ app.use(bodyParser.json());
 
 //Routes
 app.use('/auth',authRoutes);
+app.use('/user',userRoutes);
 
 app.listen(PORT, async () => {
     console.log(`Console is running on port: ${PORT}`);
