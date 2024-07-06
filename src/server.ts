@@ -7,6 +7,11 @@ import attachmentRoutes from './routes/attachments';
 import { sequelize } from './config/db';
 import path from 'path';
 
+import swaggerOptions from './swaggerConfig';
+
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -36,6 +41,10 @@ app.use('/auth',authRoutes);
 app.use('/user',userRoutes);
 app.use('/entry',entryRoutes);
 app.use('/attachment',attachmentRoutes);
+
+//Swagger setup
+const specs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve,swaggerUi.setup(specs));
 
 app.listen(PORT, async () => {
     console.log(`Console is running on port: ${PORT}`);
