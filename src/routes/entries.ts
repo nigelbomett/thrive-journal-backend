@@ -2,6 +2,7 @@ import express,{Request,Response} from 'express';
 import { JournalEntry} from '../models/JournalEntry';
 import { verifyToken } from '../middleware/auth';
 import { error } from 'console';
+import { Op } from 'sequelize';
 
 const router = express.Router();
 
@@ -208,5 +209,45 @@ router.get('/',verifyToken,async(req:Request,res:Response) => {
         res.status(400).json({error: error.message});
     }
 });
+
+router.get('/summary',verifyToken, async(req:Request,res:Response) => {
+    try {
+        const {period, date} = req.query;
+        const userId = req.userId;
+        const startDate = new Date(date as string);
+        let endDate: Date;
+
+        switch(period) {
+            case 'daily':
+                endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 1);
+                break;
+            case 'weekly':
+                endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 7);
+                break;
+            case 'monthly':
+                endDate = new Date(startDate);
+                endDate.setDate(endDate.getMonth() + 1);
+                break;
+            default:
+                return res.status(400).json({error: 'Invalid period'});
+        }
+
+        const entries = await JournalEntry.findAll({
+            where: {
+                userId: req.userId, date: {
+                    [Op.between]: [startDate, endDate],
+                }},
+            
+        });
+
+        const totalEntries = entries.length;
+
+        res.json({totalEntries,entries});
+    } catch (error: any) {
+        res.status(400).json({error: error.message});
+    }
+})
 
 export default router;
