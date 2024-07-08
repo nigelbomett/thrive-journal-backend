@@ -5,7 +5,65 @@ import { error } from 'console';
 
 const router = express.Router();
 
-//Add a new entry
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     JournalEntry:
+ *       type: object
+ *       required:
+ *         - title
+ *         - content
+ *         - category
+ *         - date
+ *       properties:
+ *         id:
+ *           type: number
+ *           description: The auto-generated id of the entry
+ *         title:
+ *           type: string
+ *           description: The title of the entry
+ *         content:
+ *           type: string
+ *           description: The content of the entry
+ *         category:
+ *           type: string
+ *           description: The category of the entry
+ *         date:
+ *           type: string
+ *           format: date
+ *           description: The date of the entry
+ *       example:
+ *         id: 1
+ *         title: My Journal Entry
+ *         content: This is the content of my journal entry.
+ *         category: Personal
+ *         date: 2024-07-03
+ */
+
+/**
+ * @swagger
+ * /entry:
+ *   post:
+ *     summary: Create a new entry
+ *     tags: [Journal Entries]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/JournalEntry'
+ *     responses:
+ *       201:
+ *         description: The entry was successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/JournalEntry'
+ *       400:
+ *         description: Bad request
+ */
 router.post('/',verifyToken,async (req: Request,res: Response) => {
     try {
         const {title,content,category} = req.body;
@@ -24,7 +82,38 @@ router.post('/',verifyToken,async (req: Request,res: Response) => {
     }
 });
 
-//Edit entry
+
+/**
+ * @swagger
+ * /entry/{id}:
+ *   put:
+ *     summary: Update an entry by ID
+ *     tags: [Journal Entries]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The entry ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/JournalEntry'
+ *     responses:
+ *       200:
+ *         description: The entry was successfully updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/JournalEntry'
+ *       404:
+ *         description: The entry was not found
+ *       400:
+ *         description: Bad request
+ */
 router.put('/:id', verifyToken,async(req: Request,res: Response) => {
     try {
         const {id} = req.params;
@@ -51,7 +140,27 @@ router.put('/:id', verifyToken,async(req: Request,res: Response) => {
     }
 });
 
-//Delete entry
+
+
+/**
+ * @swagger
+ * /entry/{id}:
+ *   delete:
+ *     summary: Delete an entry by ID
+ *     tags: [Journal Entries]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The entry ID
+ *     responses:
+ *       200:
+ *         description: The entry was successfully deleted
+ *       404:
+ *         description: The entry was not found
+ */
 router.delete('/:id',verifyToken, async(req:Request, res: Response) => {
     try {
         const {id} = req.params;
@@ -71,7 +180,25 @@ router.delete('/:id',verifyToken, async(req:Request, res: Response) => {
     }
 });
 
-//Retrieve entries
+
+/**
+ * @swagger
+ * /entry:
+ *   get:
+ *     summary: Get all entries for the authenticated user
+ *     tags: [Journal Entries]
+ *     responses:
+ *       200:
+ *         description: List of entries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/JournalEntry'
+ *       400:
+ *         description: Bad request
+ */
 router.get('/',verifyToken,async(req:Request,res:Response) => {
     try {
         const entries = await JournalEntry.findAll({where: {userId: req.userId}});
