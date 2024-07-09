@@ -46,6 +46,8 @@ app.use('/attachment',attachmentRoutes);
 const specs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve,swaggerUi.setup(specs));
 
+export {app}
+
 app.listen(PORT, async () => {
     console.log(`Console is running on port: ${PORT}`);
     try {
