@@ -22,6 +22,9 @@ const router = express.Router();
  *         id:
  *           type: number
  *           description: The auto-generated id of the entry
+ *         userId:
+ *           type: number
+ *           description: The id linking the entry to the user
  *         title:
  *           type: string
  *           description: The title of the entry
@@ -36,7 +39,6 @@ const router = express.Router();
  *           format: date
  *           description: The date of the entry
  *       example:
- *         id: 1
  *         title: My Journal Entry
  *         content: This is the content of my journal entry.
  *         category: Personal
@@ -55,6 +57,8 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/JournalEntry'
+ *     security:
+ *          - bearerAuth: []
  *     responses:
  *       201:
  *         description: The entry was successfully created
@@ -84,6 +88,8 @@ router.post('/',verifyToken,async (req: Request,res: Response) => {
 });
 
 
+
+
 /**
  * @swagger
  * /entry/{id}:
@@ -97,6 +103,8 @@ router.post('/',verifyToken,async (req: Request,res: Response) => {
  *           type: string
  *         required: true
  *         description: The entry ID
+ *     security:
+ *          - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -142,7 +150,6 @@ router.put('/:id', verifyToken,async(req: Request,res: Response) => {
 });
 
 
-
 /**
  * @swagger
  * /entry/{id}:
@@ -156,6 +163,8 @@ router.put('/:id', verifyToken,async(req: Request,res: Response) => {
  *           type: string
  *         required: true
  *         description: The entry ID
+ *     security:
+ *          - bearerAuth: []
  *     responses:
  *       200:
  *         description: The entry was successfully deleted
@@ -188,6 +197,8 @@ router.delete('/:id',verifyToken, async(req:Request, res: Response) => {
  *   get:
  *     summary: Get all entries for the authenticated user
  *     tags: [Journal Entries]
+ *     security:
+ *          - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of entries
@@ -210,6 +221,34 @@ router.get('/',verifyToken,async(req:Request,res:Response) => {
     }
 });
 
+/**
+ * @swagger
+ * /entry/summary:
+ *   get:
+ *     summary: Get a summary of entries for a specific period
+ *     tags: [Journal Entries]
+ *     parameters:
+ *       - in: query
+ *         name: period
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The period for the summary (daily, weekly, monthly)
+ *       - in: query
+ *         name: date
+ *         schema:
+ *           type: string
+ *           format: date
+ *         required: true
+ *         description: The date for the summary (Year-Month-Date)
+ *     security:
+ *          - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Summary of entries
+ *       400:
+ *         description: Bad request
+ */
 router.get('/summary',verifyToken, async(req:Request,res:Response) => {
     try {
         const {period, date} = req.query;
@@ -228,7 +267,7 @@ router.get('/summary',verifyToken, async(req:Request,res:Response) => {
                 break;
             case 'monthly':
                 endDate = new Date(startDate);
-                endDate.setDate(endDate.getMonth() + 1);
+                endDate.setMonth(endDate.getMonth() + 1);
                 break;
             default:
                 return res.status(400).json({error: 'Invalid period'});
@@ -242,6 +281,7 @@ router.get('/summary',verifyToken, async(req:Request,res:Response) => {
             
         });
 
+        //the total number of entries
         const totalEntries = entries.length;
 
         res.json({totalEntries,entries});
@@ -250,4 +290,48 @@ router.get('/summary',verifyToken, async(req:Request,res:Response) => {
     }
 })
 
+/**
+ * @swagger
+ * /entry/{id}:
+ *   get:
+ *     summary: Get an entry by ID
+ *     tags: [Journal Entries]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The entry ID
+ *     security:
+ *          - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: The entry details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Entry'
+ *       404:
+ *         description: The entry was not found
+ */
+router.get('/:id', verifyToken, async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const { title, content, category } = req.body;
+
+        //Find the entry to be updated
+        const entry = await JournalEntry.findOne({ where: { id, userId: req.userId } });
+
+        if (!entry) {
+            return res.status(404).json({ error: 'Journal Entry not found' });
+        }
+
+
+        res.json(entry);
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
+});
 export default router;

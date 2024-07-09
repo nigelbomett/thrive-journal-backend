@@ -20,7 +20,67 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage:storage});
 
-//Upload an attachment
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Attachment:
+ *       type: object
+ *       required:
+ *         - filePath
+ *         - fileName
+ *       properties:
+ *         id:
+ *           type: number
+ *           description: The auto-generated id of the attachment
+ *         journalEntryId:
+ *           type: number
+ *           description: The id linking the attachment to a journal entry
+ *         filePath:
+ *           type: string
+ *           description: The path of where the attachment is located
+ *         fileName:
+ *           type: string
+ *           description: The name of the attachment
+ *       example:
+ *         filePath: C:\Users\Public\Pictures
+ *         fileName: shamiri.png
+ */
+
+
+/**
+ * @swagger
+ * /attachment/upload:
+ *   post:
+ *     summary: Add an attachment
+ *     tags: [Attachment]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                 entryId:
+ *                   type: integer
+ *                   description: The ID of the journal entry to attach the file to
+ *                 file:
+ *                   type: string
+ *                   format: binary
+ *                   description: The file to upload 
+ *     responses:
+ *       201:
+ *         description: The attachment was successfully added
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Attachment'
+ *       400:
+ *         description: Bad request
+ */
 router.post('/upload', verifyToken, upload.single('file'), async (req: Request, res: Response) => {
 
     try {
@@ -43,7 +103,33 @@ router.post('/upload', verifyToken, upload.single('file'), async (req: Request, 
     }
 });
 
-//Get attachments
+
+
+/**
+ * @swagger
+ * /attachment/{id}:
+ *   get:
+ *     summary: Get an attachment by the Journal Entry ID
+ *     tags: [Attachment]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The journal entry ID
+ *     security:
+ *          - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: The attachment details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Attachment'
+ *       404:
+ *         description: The attachment was not found
+ */
 router.get('/:entryId',verifyToken, async (req:Request,res:Response) => {
     try {
         const {entryId} = req.params;
@@ -53,6 +139,7 @@ router.get('/:entryId',verifyToken, async (req:Request,res:Response) => {
         res.status(400).json({error:error.message});
     }
 });
+
 
 //Download attachment
 router.get('/download/:id',verifyToken,async(req:Request,res:Response) => {
@@ -69,7 +156,29 @@ router.get('/download/:id',verifyToken,async(req:Request,res:Response) => {
     }
 });
 
-//Delete attachment
+
+
+/**
+ * @swagger
+ * /attachment/{id}:
+ *   delete:
+ *     summary: Delete an attachment by ID
+ *     tags: [Attachment]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The attachment ID
+ *     security:
+ *          - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: The attachment was successfully deleted
+ *       404:
+ *         description: The attachment was not found
+ */
 router.delete('/:id', verifyToken, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;

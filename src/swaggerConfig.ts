@@ -13,6 +13,20 @@ const swaggerDefinition: OpenAPIV3.Document = {
             description: 'Development server',
         },
     ],
+    components:{
+        securitySchemes:{
+            bearerAuth:{
+                type:'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT'
+            },
+        },
+    },
+    security:[
+        {
+            beararAuth: []
+        }
+    ],
     paths:{}
 };
 
