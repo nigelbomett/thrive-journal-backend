@@ -22,7 +22,7 @@ var bodyParser = require('body-parser');
 
 
 const app:Application = express();
-const PORT = process.env.LOCAL_PORT
+const PORT = process.env.PORT || 25234
 
 app.use(cors());
 
