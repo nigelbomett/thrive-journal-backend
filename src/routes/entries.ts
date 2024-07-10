@@ -17,7 +17,6 @@ const router = express.Router();
  *         - title
  *         - content
  *         - category
- *         - date
  *       properties:
  *         id:
  *           type: number
@@ -42,7 +41,6 @@ const router = express.Router();
  *         title: My Journal Entry
  *         content: This is the content of my journal entry.
  *         category: Personal
- *         date: 2024-07-03
  */
 
 /**
