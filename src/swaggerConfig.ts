@@ -12,6 +12,10 @@ const swaggerDefinition: OpenAPIV3.Document = {
             url: 'http://localhost:25234',
             description: 'Development server',
         },
+        {
+            url: 'https://thrive-journal-api.onrender.com',
+            description: 'Production server'
+        }
     ],
     components:{
         securitySchemes:{
