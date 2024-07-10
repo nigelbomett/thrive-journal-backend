@@ -1,7 +1,6 @@
 import express,{Request,Response} from 'express';
 import { JournalEntry} from '../models/JournalEntry';
 import { verifyToken } from '../middleware/auth';
-import { error } from 'console';
 import { Op } from 'sequelize';
 
 const router = express.Router();
@@ -41,6 +40,7 @@ const router = express.Router();
  *         title: My Journal Entry
  *         content: This is the content of my journal entry.
  *         category: Personal
+ *         date: 2024-07-21
  */
 
 /**
@@ -69,14 +69,14 @@ const router = express.Router();
  */
 router.post('/',verifyToken,async (req: Request,res: Response) => {
     try {
-        const {title,content,category} = req.body;
+        const {title,content,category,date} = req.body;
         
         //Check if there is required content missing
         if (!title || !content || !category) {
             return res.status(400).json({ error: `Please provide all the required details` });
         }
 
-        const entry = await JournalEntry.create({userId: req.userId as number,title,content,category,date: new Date()});
+        const entry = await JournalEntry.create({userId: req.userId as number,title,content,category,date: date || new Date()});
 
         //Successfully added entry
         res.status(201).json(entry);
@@ -125,7 +125,7 @@ router.put('/:id', verifyToken,async(req: Request,res: Response) => {
     try {
         const {id} = req.params;
   
-        const {title,content,category} = req.body;
+        const {title,content,category,date} = req.body;
 
         //Find the entry to be updated
         const entry = await JournalEntry.findOne({ where: {id, userId:req.userId}});
@@ -138,6 +138,7 @@ router.put('/:id', verifyToken,async(req: Request,res: Response) => {
         if(title) entry.title = title;
         if(content) entry.content = content;
         if(category) entry.category = category;
+        if(date) entry.date = date;
         
 
         await entry.save();
