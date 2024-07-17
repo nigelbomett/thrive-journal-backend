@@ -46,9 +46,9 @@ app.use('/attachment',attachmentRoutes);
 const specs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve,swaggerUi.setup(specs));
 
-export {app}
 
-app.listen(PORT, async () => {
+
+const server = app.listen(PORT, async () => {
     console.log(`Console is running on port: ${PORT}`);
     try {
         await sequelize.authenticate();
@@ -57,3 +57,6 @@ app.listen(PORT, async () => {
         console.log(error);
     }
 })
+
+export { app ,server}
+

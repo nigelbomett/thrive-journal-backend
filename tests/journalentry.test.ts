@@ -1,15 +1,17 @@
 import request from 'supertest';
-import {app} from '../src/server';
+import {app,server} from '../src/server';
 import {User} from '../src/models/User';
 import {JournalEntry} from '../src/models/JournalEntry';
 import {sequelize} from '../src/config/db';
 
 jest.setTimeout(30000);
 
+
 describe('Journal API',  () => {
     let token: string
 
     beforeAll(async () => {
+
         //Sync database
         await sequelize.sync({force:true});
 
@@ -32,6 +34,9 @@ describe('Journal API',  () => {
     
 
 afterAll(async () => {
+    //close the server
+    server.close();
+    
     //Close the database connection
     await sequelize.close();
 });
