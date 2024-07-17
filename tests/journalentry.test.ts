@@ -2,7 +2,7 @@ import request from 'supertest';
 import {app} from '../src/server';
 import {User} from '../src/models/User';
 import {JournalEntry} from '../src/models/JournalEntry';
-import {sequelize_test} from '../src/config/db';
+import {sequelize} from '../src/config/db';
 
 jest.setTimeout(30000);
 
@@ -11,7 +11,7 @@ describe('Journal API',  () => {
 
     beforeAll(async () => {
         //Sync database
-        await sequelize_test.sync({force:true});
+        await sequelize.sync({force:true});
 
     //create a user and get a token
     const user = await User.create({
@@ -33,7 +33,7 @@ describe('Journal API',  () => {
 
 afterAll(async () => {
     //Close the database connection
-    await sequelize_test.close();
+    await sequelize.close();
 });
 
 describe('Entries', () => {
