@@ -10,7 +10,6 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:8080']  
     metrics_path: '/prometheus'
-    scheme: 'https'
     basic_auth:
       username: 'admin'
       password: '1192daa07779d83ffd0d2e4ef933805b4f'
