@@ -6,7 +6,7 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'jenkins'
+  - job_name: 'jenkins_job'
     static_configs:
       - targets: ['localhost:8080']  # Adjust port if your Jenkins runs on a different port
     metrics_path: '/prometheus'
