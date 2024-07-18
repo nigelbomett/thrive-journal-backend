@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'jenkins'
+    static_configs:
+      - targets: ['localhost:8080']  # Adjust port if your Jenkins runs on a different port
+    metrics_path: '/prometheus'
+
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
