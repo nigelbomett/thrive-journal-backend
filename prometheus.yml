@@ -8,7 +8,7 @@ scrape_configs:
 
   - job_name: 'jenkins_job'
     static_configs:
-      - targets: ['2b9c-102-140-221-75.ngrok-free.app']  
+      - targets: ['localhost:8080']  
     metrics_path: '/prometheus'
     scheme: 'https'
     basic_auth:
